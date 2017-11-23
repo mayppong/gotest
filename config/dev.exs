@@ -53,5 +53,5 @@ config :gotest, Gotest.Repo,
   username: "postgres",
   password: "postgres",
   database: "gotest_dev",
-  hostname: "localhost",
+  hostname: "postgres",
   pool_size: 10

@@ -15,8 +15,11 @@ use Mix.Config
 # which you typically run after static files are built.
 config :gotest, GotestWeb.Endpoint,
   load_from_system_env: true,
-  url: [host: "example.com", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  url: [host: "localhost", port: {:system, "PORT"}],
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  server: true,
+  root: ".",
+  version: Mix.Project.config[:version]
 
 # Do not print debug messages in production
 config :logger, level: :info
@@ -61,4 +64,16 @@ config :logger, level: :info
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
-import_config "prod.secret.exs"
+# import_config "prod.secret.exs"
+
+config :gotest, GotestWeb.Endpoint,
+  secret_key_base: "/Nq7+gs7f32+MGw7cH9ocywioTc1ZuTeXnK7zOZIvG5xdMJQYxez3kuM+OSbnXKO"
+
+# Configure your database
+config :gotest, Gotest.Repo,
+  hostname: "${DATABASE_HOST}",
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "gotest_prod",
+  pool_size: 15

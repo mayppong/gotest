@@ -1,0 +1,47 @@
+FROM centos:7
+
+RUN yum update -y && yum clean all
+RUN yum reinstall -y glibc-common && yum clean all
+RUN yum install -y centos-release-scl && yum clean all
+
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+RUN localedef -i en_US -f UTF-8 en_US.UTF-8
+
+RUN yum -y install \
+  epel-release \
+  git \
+  ncurses-devel \
+  install \
+  gcc \
+  gcc-c++ \
+  make \
+  cmake \
+  openssl-devel \
+  autoconf \
+  zip \
+  bzip2 \
+  readline-devel \
+  wget \
+  && yum clean all
+
+# Install Erlang
+RUN wget http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+RUN rpm -Uvh erlang-solutions-1.0-1.noarch.rpm
+RUN yum update -y
+RUN yum install -y erlang
+
+# Install Elixir
+RUN git clone --branch v1.5.2 https://github.com/elixir-lang/elixir.git  /opt/elixir
+WORKDIR /opt/elixir
+RUN make clean test
+
+RUN ln -s /opt/elixir/bin/iex /usr/local/bin/iex
+RUN ln -s /opt/elixir/bin/mix /usr/local/bin/mix
+RUN ln -s /opt/elixir/bin/elixir /usr/local/bin/elixir
+RUN ln -s /opt/elixir/bin/elixirc /usr/local/bin/elixirc
+
+RUN mix local.hex --force
+RUN mix local.rebar --force

@@ -9,12 +9,38 @@ services:
 
   # the main image, this is the application
   test:
-    image: "elixir:1.5-alpine"
+    build:
+      context: ./
+      dockerfile: ./deployments/Dockerfile.dev
+    image: "gotest:dev"
     environment:
       MIX_ENV: "test"
-    command: sh -c "mix local.hex --force; mix local.rebar --force; mix test"
+    command: "mix test"
     working_dir: /gotest
     volumes:
       - ./:/gotest
     links:
       - postgres
+
+  build:
+    build:
+      context: ./
+      dockerfile: ./deployments/Dockerfile.dev
+    image: "gotest:dev"
+    environment:
+      MIX_ENV: "prod"
+    command: sh -c "mix deps.get; mix phx.digest; mix release"
+    working_dir: /gotest
+    volumes:
+      - ./:/gotest
+
+  release:
+    build:
+      context: ./
+      dockerfile: ./deployments/Dockerfile
+      args:
+        VERSION: "0.0.1"
+        PORT: 4000
+    image: "gotest:0.0.1"
+    environment:
+      MIX_ENV: "prod"
