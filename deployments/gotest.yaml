@@ -9,7 +9,7 @@ spec:
     app: gotest
   type: LoadBalancer
   ports:
-  - port: 4000
+  - port: 80
     targetPort: 4000
     name: web
 

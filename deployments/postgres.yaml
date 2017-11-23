@@ -8,6 +8,8 @@ spec:
   selector:
     app: postgres
   clusterIP: None
+  loadBalancerSourceRanges:
+  - 10.0.0.0/32
 
 ---
 
