@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gotest
+  labels:
+    app: gotest
+spec:
+  selector:
+    app: gotest
+  type: LoadBalancer
+  ports:
+  - port: 4000
+    targetPort: 4000
+    name: web
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gotest
+  labels:
+    app: gotest
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gotest
+    spec:
+      containers:
+      - name: gotest
+        image: gotest:0.0.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4000
+          name: web
+        command: ["/gotest/bin/gotest", "foreground"]
+        envFrom:
+          - configMapRef:
+              name: gotest-demo
+          - secretRef:
+              name: gotest-demo
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gotest-demo
+data:
+  REPLACE_OS_VARS: "true"
+  MIX_ENV: "prod"
+  PORT: "4000"
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gotest-demo
+data:
+  DATABASE_HOST: "cG9zdGdyZXMuZGVmYXVsdC5zdmMuY2x1c3Rlci5sb2NhbA==" # postgres.default.svc.cluster.local
