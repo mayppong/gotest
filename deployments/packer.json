@@ -1,0 +1,29 @@
+{
+    "builders": [{
+      "type": "virtualbox-iso",
+      "vm_name": "centos-7",
+      "disk_size": 20480,
+      "guest_os_type": "RedHat_64",
+      "headless": true,
+      "ssh_port": 22,
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "iso_urls": [
+        "http://mirrors.bestthaihost.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1708.iso"
+      ],
+      "iso_checksum_type": "SHA256",
+      "iso_checksum": "bba314624956961a2ea31dd460cd860a77911c1e0a56e4820a12b9c5dad363f5",
+      "iso_checksum_url": "http://mirror.centos.org/centos/7/isos/x86_64/sha256sum.txt.asc",
+      "shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p"
+    }],
+    "provisioners": [{
+        "type": "ansible-local",
+        "playbook_file": "ansible.yaml"
+    }],
+    "post-processors": [
+      {
+        "output": "../_builds/virtualbox-centos7-gotest.box",
+        "type": "vagrant"
+      }
+    ]
+}

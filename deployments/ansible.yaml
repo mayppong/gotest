@@ -1,0 +1,36 @@
+- hosts: webserver
+  remote_user: root
+
+  tasks:
+  - copy:
+      src: ../_build/prod/rel/gotest/releases/0.0.1/gotest.tar.gz
+      dest: /gotest
+  - name: setup postgresql
+    block:
+      - yum: name=postgresql state=latest
+      - service: name=postgresql state=started
+      - firewalld:
+          service: postgres
+          source: 127.0.0.1
+          port: 5432/tcp
+          state: enabled
+      - firewalld:
+          service: postgres
+          source: 10.0.0.0/32
+          port: 5432/tcp
+          state: enabled
+  - name: setup nginx with epel-release
+    block:
+      - yum: name=epel-release state=latest
+      - yum: name=nginx state=latest
+      - copy:
+          src: ./nginx.conf
+          dest: /etc/nginx/nginx.conf
+      - service: name=nginx state=started
+      - service: name=firewalld state=started
+      - firewalld:
+          service: nginx
+          port: 80/tcp
+          state: enabled
+  - timezone:
+      name: Etc/UTC
